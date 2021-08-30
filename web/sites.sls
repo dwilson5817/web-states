@@ -18,7 +18,7 @@ web_dir:
       - user: user_dylan
 
 {%- set testing = salt['pillar.get']('testing') %}
-{% for site, args in pillar.get('sites', {}).items() %}
+{% for site, subdomains in pillar.get('sites', {}).items() %}
 
 {%- set site_friendly = site | replace(".", "_")  %}
 
@@ -28,6 +28,10 @@ web_dir:
 {{ site_friendly }}_cert:
   acme.cert:
     - name: {{ site }}
+    - aliases:
+      {% for subdomain in subdomains %}
+      - {{ subdomain }}.{{ site }}
+      {% endfor %}
     - email: webmaster@dylanw.net
     - dns_plugin: cloudflare
     - dns_plugin_credentials: /root/.secrets/certbot/cloudflare.ini
@@ -37,44 +41,32 @@ web_dir:
     - require:
       - file: cloudflare_ini
 
-# CLONE SITE REPOSITORY
-# Clone Git repository with site files into web directory.  This should include a docker-compose.yml file in the root of
-# the repository which will be used to bring up the Docker containers for this site.
-{{ site_friendly }}_repo:
-  git.latest:
-    - name: {{ args.repo }}
-    - target: /srv/www/{{ site_friendly }}
+# CREATE SITE DIRECTORY
+# Create a directory to store the site files.  This will contain directories to each of the subdomains for this site.
+# For example, if this site is example.com, /srv/www/example.com will be created.
+{{ site_friendly }}_dir:
+  file.directory:
+    - name: /srv/www/{{ site }}
     - user: dylan
+    - group: dylan
     - require:
+      - file: web_dir
       - user: user_dylan
 
-{% if not testing %}
-{% for secret, secret_args in args.secrets.items() %}
+{% for subdomain in subdomains %}
 
-# COPY SECRET IN PLACE
-# For each secret of this site, we will move it in place - importantly we use the Jinja template engine so we can
-# replace Jinja with the actual secrets.  This still be done with the vault.read_secret module.  This won't work inside
-# a Docker container because no Vault server will be available, so it will only be run in production.
-{{ site_friendly }}_{{ secret }}:
-  file.managed:
-    - name: /srv/www/{{ site_friendly }}/{{ secret_args.to }}
-    - source: /srv/www/{{ site_friendly }}/{{ secret_args.from }}
+# CREATE SUBDOMAIN DIRECTORY
+# For each subdomain, create a directory to store the subdomain files.  This will be within the site directory create
+# above.  For example, if this site is example.com and this subdomain is www, /srv/www/example.com/www will be created.
+{{ site_friendly }}_{{ subdomain }}_dir:
+  file.directory:
+    - name: /srv/www/{{ site }}/{{ subdomain }}
     - user: dylan
-    - template: jinja
+    - group: dylan
     - require:
-      - git: {{ site_friendly }}_repo
+      - file: {{ site_friendly }}_dir
       - user: user_dylan
 
 {% endfor %}
-
-# BRING UP SITE
-# All the files are in place, we will now bring up the site.  Use the dockercomposeup Salt module to bring up the
-# docker-compose.yml file.  Importantly, this may not work if docker-compose has just been installed and so the path has
-# not been updated - this also won't work inside a Docker container, so it will only be run in production.
-dockercompose.up:
-  module.run:
-      - path: /srv/www/{{ site_friendly }}
-
-{% endif %}
 
 {% endfor %}
