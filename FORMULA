@@ -1,0 +1,9 @@
+name: web
+os: Debian, Ubuntu
+os_family: Debian
+version: 1.0.0
+release: 1
+minimum_version: 3003
+summary: Web states
+description: Web states applied to web server VMs
+top_level_dir: web
