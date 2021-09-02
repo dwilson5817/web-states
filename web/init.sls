@@ -4,6 +4,7 @@
 # are required.  A dot before an SLS name indicates the SLS file exists in the current directory.
 include:
   - letsencrypt.install
+  - .npm
   - .php
   - .files
   - .sites
