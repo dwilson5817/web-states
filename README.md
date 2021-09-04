@@ -11,6 +11,9 @@ This formula requires the following additional formulas:
     - name: nginx
       repo: git
       source: https://gitlab.dylanwilson.dev/infrastructure/salt-formulas/nginx-formula.git
+    - name: node
+      repo: git
+      source: https://gitlab.dylanwilson.dev/infrastructure/salt-formulas/node-formula.git
     - name: php
       repo: git
       source: https://gitlab.dylanwilson.dev/infrastructure/salt-formulas/php-formula.git

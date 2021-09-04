@@ -37,6 +37,9 @@ provisioner:
     - name: nginx
       repo: git
       source: https://gitlab.dylanwilson.dev/infrastructure/salt-formulas/nginx-formula.git
+    - name: node
+      repo: git
+      source: https://gitlab.dylanwilson.dev/infrastructure/salt-formulas/node-formula.git
     - name: php
       repo: git
       source: https://gitlab.dylanwilson.dev/infrastructure/salt-formulas/php-formula.git
@@ -54,6 +57,10 @@ provisioner:
           - letsencrypt
     web.sls:
       testing: true
+      node:
+        pkg:
+          version: 14
+          use_upstream_repo: true
       sites:
         minersrealm.net:
           - www
@@ -74,7 +81,8 @@ provisioner:
                         - '[::]:80'
                         - 80
                     - server_name: panel.minersrealm.net
-                    - return: 301 https://$server_name$request_uri
+                    - location /:
+                        - return: 301 https://$host$request_uri
                 - server:
                     - listen:
                         - '[::]:443 ssl http2'
@@ -103,7 +111,7 @@ provisioner:
                         - try_files: '$uri $uri/ /index.php?$query_string'
                     - location ~ \.php$:
                         - fastcgi_split_path_info: '^(.+\.php)(/.+)$'
-                        - fastcgi_pass: unix:/run/php/php7.2-fpm.sock
+                        - fastcgi_pass: unix:/run/php/php8.0-fpm.sock
                         - fastcgi_index: index.php
                         - include: fastcgi_params
                         - fastcgi_param: PHP_VALUE "upload_max_filesize = 100M \n post_max_size=100M"
