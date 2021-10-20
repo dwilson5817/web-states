@@ -53,7 +53,7 @@ provisioner:
   state_top:
     base:
       '*':
-        - core
+        - core.shell
         - web
   pillars_from_files:
     letsencrypt.sls: pillar/letsencrypt.sls
