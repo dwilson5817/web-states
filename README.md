@@ -5,6 +5,10 @@
 This formula requires the following additional formulas:
 
 ```yaml
+    - name: core
+      repo: git
+      branch: main
+      source: https://gitlab.dylanwilson.dev/infrastructure/salt-states/core-states.git
     - name: letsencrypt
       repo: git
       source: https://gitlab.dylanwilson.dev/infrastructure/salt-formulas/letsencrypt-formula.git

@@ -1,12 +1,4 @@
 ---
-# ENSURE USER DYLAN EXISTS
-# The dylan user should have been created when this machine was initially setup.  When running tests inside Docker, this
-# user will not exist so we create it before starting.
-user_dylan:
-  user.present:
-    - name: dylan
-    - fullname: Dylan Wilson
-
 # CREATE WEB DIRECTORY
 # This is the directory which will store the files for each of the sites being hosted on this machine.  This needs to
 # exist before we can begin cloning Git repositories.
