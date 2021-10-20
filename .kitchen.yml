@@ -31,9 +31,16 @@ provisioner:
     - Gemfile.lock
     - tests/
   dependencies:
+    - name: core
+      repo: git
+      branch: main
+      source: https://gitlab.dylanwilson.dev/infrastructure/salt-states/core-states.git
     - name: letsencrypt
       repo: git
       source: https://gitlab.dylanwilson.dev/infrastructure/salt-formulas/letsencrypt-formula.git
+    - name: munin
+      repo: git
+      source: https://gitlab.dylanwilson.dev/infrastructure/salt-formulas/munin-formula.git
     - name: nginx
       repo: git
       source: https://gitlab.dylanwilson.dev/infrastructure/salt-formulas/nginx-formula.git
@@ -46,6 +53,7 @@ provisioner:
   state_top:
     base:
       '*':
+        - core.shell
         - web
   pillars_from_files:
     letsencrypt.sls: pillar/letsencrypt.sls
