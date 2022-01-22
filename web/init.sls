@@ -8,5 +8,6 @@ include:
   - .php
   - .files
   - .sites
+  - .backup
   # - php.composer
   - nginx
