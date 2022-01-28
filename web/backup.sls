@@ -10,7 +10,7 @@ cron:
 # drive.  The file will be called YYYY-MM-DD.tar.gz where Y represents the year, M the month and D the day.
 daily_backup:
   cron.present:
-    - name: tar -zcf "/mnt/ftpback-rbx2-173.ovh.net/$( hostname )/$( date '+%Y-%m-%d' ).tar.gz" /srv/www
+    - name: tar -zcf "/mnt/ftpback-rbx2-173.ovh.net/$( hostname )/$( date '+\%Y-\%m-\%d' ).tar.gz" /srv/www
     - user: root
     - special: '@daily'
     - require:
